@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigitMarkT™ Live Dashboard (Rands)</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<style>
+/* Reset */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Montserrat', sans-serif; background:#121212; color:#fff; overflow-x:hidden; }
+a { text-decoration:none; color:inherit; }
+
+/* Particle background */
+#particles-js { position: fixed; width:100%; height:100%; z-index:-1; }
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top:0; left:0;
+    width:250px;
+    height:100%;
+    background:#1f1f1f;
+    display:flex; flex-direction:column;
+    padding:2rem 1rem;
+    z-index:2;
+}
+.sidebar h2 { color: gold; margin-bottom:2rem; font-size:1.5rem; }
+.sidebar a {
+    padding:1rem 0.5rem;
+    margin:0.3rem 0;
+    color:#fff;
+    font-weight:500;
+    border-radius:10px;
+    transition:0.3s;
+}
+.sidebar a:hover { background: gold; color:#000; }
+
+/* Main content */
+.main { margin-left:250px; padding:2rem; z-index:2; position:relative; }
+.main h1 { margin-bottom:2rem; display:flex; align-items:center; gap:1rem; }
+
+/* Logo */
+.logo {
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background: gold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 15px gold, 0 0 30px gold, 0 0 45px gold;
+    animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+    overflow:hidden;
+}
+.logo img { width:80%; height:80%; object-fit:contain; border-radius:50%; }
+@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+@keyframes glow { 0%,100%{box-shadow:0 0 15px gold,0 0 30px gold,0 0 45px gold;} 50%{box-shadow:0 0 25px gold,0 0 50px gold,0 0 70px gold;} }
+
+/* Cards */
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+.card {
+    background:#1f1f1f;
+    padding:1.5rem;
+    border-radius:15px;
+    box-shadow:0 0 15px #000;
+    transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-5px); }
+.card h3 { margin-bottom:0.5rem; color: gold; }
+
+/* Charts */
+.chart-container { background:#1f1f1f; padding:1rem; border-radius:15px; box-shadow:0 0 15px #000; margin-bottom:2rem; }
+
+/* Responsive */
+@media(max-width:768px){
+    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto; }
+    .sidebar h2 { display:none; }
+    .main { margin-left:0; }
+    .cards { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Particle background -->
+<div id="particles-js"></div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>DigitMarkT™</h2>
+    <a href="#overview">Overview</a>
+    <a href="#sales">Sales</a>
+    <a href="#users">Users</a>
+    <a href="#performance">Performance</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+    <h1>
+        <div class="logo"><img src="logo.png" alt="DigitMarkT Logo"></div>
+        DigitMarkT™ Live Dashboard (Rands)
+    </h1>
+
+    <!-- Cards with animated counters in Rands -->
+    <div class="cards">
+        <div class="card">
+            <h3>Total Users</h3>
+            <p class="counter" data-target="1245">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Sales</h3>
+            <p class="counter" data-target="12430">R0</p>
+        </div>
+        <div class="card">
+            <h3>Active Sessions</h3>
+            <p class="counter" data-target="324">0</p>
+        </div>
+        <div class="card">
+            <h3>Revenue</h3>
+            <p class="counter" data-target="18765">R0</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-container"><canvas id="salesChart"></canvas></div>
+    <div class="chart-container"><canvas id="usersChart"></canvas></div>
+</div>
+
+<script>
+// Particles.js
+particlesJS("particles-js", {
+  "particles": {
+    "number": { "value": 100 },
+    "color": { "value": ["#00f","#f00","#0f0"] },
+    "shape": { "type": "polygon", "polygon": { "nb_sides": 6 } },
+    "opacity": { "value": 0.5 },
+    "size": { "value": 4 },
+    "line_linked": { "enable": true, "distance": 150, "color": "#fff", "opacity": 0.1, "width": 1 },
+    "move": { "enable": true, "speed": 2, "direction": "none", "random": true, "straight": false, "out_mode": "out" }
+  },
+  "interactivity": {
+    "detect_on": "canvas",
+    "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" } },
+    "modes": { "repulse": { "distance": 100 }, "push": { "particles_nb": 4 } }
+  },
+  "retina_detect": true
+});
+
+// Chart.js setup
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+const salesChart = new Chart(salesCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [{
+            label: 'Monthly Sales (R)',
+            data: [1200, 1900, 3000, 2500, 4000, 5000],
+            borderColor: 'gold',
+            backgroundColor: 'rgba(255, 215, 0, 0.2)',
+            fill:true,
+            tension:0.3
+        }]
+    },
+    options: { responsive:true, plugins:{ legend:{ labels:{ color:'#fff' } } }, scales:{ y:{ ticks:{ color:'#fff' } }, x:{ ticks:{ color:'#fff' } } } }
+});
+
+const usersCtx = document.getElementById('usersChart').getContext('2d');
+const usersChart = new Chart(usersCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+            label: 'Active Users',
+            data: [120, 200, 180, 220, 300, 250, 400],
+            backgroundColor: 'gold'
+        }]
+    },
+    options: { responsive:true, plugins:{ legend:{ labels:{ color:'#fff' } } }, scales:{ y:{ ticks:{ color:'#fff' } }, x:{ ticks:{ color:'#fff' } } } }
+});
+
+// Animated counters in Rands
+function animateCounter(counter, target){
+    let count = 0;
+    const increment = target/100;
+    const isR = counter.textContent.includes('R');
+    const update = () => {
+        count += increment;
+        if(count < target){
+            counter.textContent = isR ? `R${Math.floor(count)}` : Math.floor(count);
+            requestAnimationFrame(update);
+        } else {
+            counter.textContent = isR ? `R${target}` : target;
+        }
+    }
+    update();
+}
+const counters = document.querySelectorAll('.counter');
+counters.forEach(c => animateCounter(c,+c.getAttribute('data-target')));
+
+// Live updates every 5 seconds
+setInterval(() => {
+    const totalUsers = Math.floor(1000 + Math.random()*500);
+    const totalSales = Math.floor(10000 + Math.random()*5000);
+    const activeSessions = Math.floor(200 + Math.random()*150);
+    const revenue = Math.floor(15000 + Math.random()*5000);
+
+    const cardData = [
+        {elem: document.querySelector('[data-target="1245"]'), value: totalUsers},
+        {elem: document.querySelector('[data-target="12430"]'), value: totalSales},
+        {elem: document.querySelector('[data-target="324"]'), value: activeSessions},
+        {elem: document.querySelector('[data-target="18765"]'), value: revenue}
+    ];
+
+    cardData.forEach(c => {
+        c.elem.setAttribute('data-target', c.value);
+        animateCounter(c.elem, c.value);
+    });
+
+    // Update charts
+    salesChart.data.datasets[0].data = Array.from({length:6}, ()=> Math.floor(1000 + Math.random()*5000));
+    salesChart.update();
+    usersChart.data.datasets[0].data = Array.from({length:7}, ()=> Math.floor(100 + Math.random()*400));
+    usersChart.update();
+},5000);
+</script>
+
+</body>
+</html>
